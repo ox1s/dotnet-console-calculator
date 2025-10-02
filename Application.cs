@@ -33,11 +33,11 @@ namespace dotnet_console_calculator
                     double result = _calculator.Calculate(selectedOperation, num1, num2);
 
                     WriteInColor("\nРезультат: ", ConsoleColor.Gray);
-                    WriteLineInColor($"Результат: {AddBrackets(num1)} {selectedOperation} {AddBrackets(num2)} = {result}", ConsoleColor.Green);
+                    WriteLineInColor($"{AddBrackets(num1)} {selectedOperation} {AddBrackets(num2)} = {result}", ConsoleColor.Green);
                 }
                 catch (FormatException)
                 {
-                    Console.WriteLine("Ошибка: Неверный формат числа.");
+                    WriteLineInColor("Ошибка: Неверный формат числа.", ConsoleColor.Red);
                 }
                 catch (Exception ex)
                 {
@@ -71,7 +71,7 @@ namespace dotnet_console_calculator
                 {
                     return number;
                 }
-                Console.WriteLine("Ошибка: Неверный формат числа. Попробуйте еще раз.");
+                WriteLineInColor("Ошибка: Неверный формат числа. Попробуйте еще раз.", ConsoleColor.Red);
             }
         }
         private string? ReadUserInput(string message)
@@ -82,11 +82,12 @@ namespace dotnet_console_calculator
 
         private string DisplayOperations()
         {
-            Console.WriteLine("Доступные операции:");
-            foreach (var opStr in _calculator.GetAvailableOperations())
-            {
-                Console.WriteLine($"{opStr}");
-            }
+            Console.WriteLine(); 
+            WriteLineInColor("Доступные операции:", ConsoleColor.Gray);
+
+            string availableOps = string.Join("   ", _calculator.GetAvailableOperations());
+            Console.WriteLine(availableOps);
+            Console.WriteLine();
 
             while (true)
             {
@@ -96,7 +97,7 @@ namespace dotnet_console_calculator
                 {
                     return symbol;
                 }
-                Console.WriteLine("Ошибка: неизвестная операция. Попробуйте еще раз.");
+                WriteLineInColor("Ошибка: неизвестная операция. Попробуйте еще раз.", ConsoleColor.Red);
             }
         }
 
@@ -113,7 +114,7 @@ namespace dotnet_console_calculator
             Console.WriteLine(message);
             Console.ResetColor();
         }
-        
+
     }
 
 }
