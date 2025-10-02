@@ -9,6 +9,7 @@ namespace dotnet_console_calculator
         {
             while (true)
             {
+                bool shouldExit = false;
                 try
                 {
                     Console.Clear();
@@ -23,7 +24,7 @@ namespace dotnet_console_calculator
                                                                                    
 ");
                     Console.ResetColor();
-                    double num1 = ReadNumberWithValidation("Введите первое число (или 'q' для выхода): ", out bool shouldExit);
+                    double num1 = ReadNumberWithValidation("Введите первое число (или 'q' для выхода): ", out shouldExit);
                     if (shouldExit) break;
 
                     string selectedOperation = DisplayOperations();
@@ -45,9 +46,12 @@ namespace dotnet_console_calculator
                 }
                 finally
                 {
-                    Console.WriteLine("\n------------------------------------");
-                    Console.WriteLine("Нажмите любую клавишу для следующего вычисления...");
-                    Console.ReadKey();
+                    if (!shouldExit)
+                    {
+                        Console.WriteLine("\n------------------------------------");
+                        Console.WriteLine("Нажмите любую клавишу для следующего вычисления...");
+                        Console.ReadKey();
+                    }
                 }
             }
 
@@ -82,7 +86,7 @@ namespace dotnet_console_calculator
 
         private string DisplayOperations()
         {
-            Console.WriteLine(); 
+            Console.WriteLine();
             WriteLineInColor("Доступные операции:", ConsoleColor.Gray);
 
             string availableOps = string.Join("   ", _calculator.GetAvailableOperations());
