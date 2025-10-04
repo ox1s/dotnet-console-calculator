@@ -1,20 +1,19 @@
-namespace dotnet_console_calculator
-{
-    public class Application
-    {
-        private readonly Calculator _calculator;
 
-        public Application(Calculator calculator) => _calculator = calculator;
-        public void Run()
+public class Application
+{
+    private readonly Calculator _calculator;
+
+    public Application(Calculator calculator) => _calculator = calculator;
+    public void Run()
+    {
+        while (true)
         {
-            while (true)
+            bool shouldExit = false;
+            try
             {
-                bool shouldExit = false;
-                try
-                {
-                    Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    Console.WriteLine(@"
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                Console.WriteLine(@"
  ██████╗ █████╗ ██╗      ██████╗██╗   ██╗██╗      █████╗ ████████╗ ██████╗ ██████╗ 
 ██╔════╝██╔══██╗██║     ██╔════╝██║   ██║██║     ██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗
 ██║     ███████║██║     ██║     ██║   ██║██║     ███████║   ██║   ██║   ██║██████╔╝
@@ -23,102 +22,101 @@ namespace dotnet_console_calculator
  ╚═════╝╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝
                                                                                    
 ");
-                    Console.ResetColor();
-                    double num1 = ReadNumberWithValidation("Введите первое число (или 'q' для выхода): ", out shouldExit);
-                    if (shouldExit) break;
+                Console.ResetColor();
+                double numberOne = ReadNumberWithValidation("Введите первое число (или 'q' для выхода): ", out shouldExit);
+                if (shouldExit) break;
 
-                    string selectedOperation = DisplayOperations();
+                string selectedOperation = DisplayOperations();
 
-                    double num2 = ReadNumberWithValidation("Введите второе число: ", out _);
+                double numberTwo = ReadNumberWithValidation("Введите второе число: ", out _);
 
-                    double result = _calculator.Calculate(selectedOperation, num1, num2);
+                double resultOfOperation = _calculator.Calculate(selectedOperation, numberOne, numberTwo);
 
-                    WriteInColor("\nРезультат: ", ConsoleColor.Gray);
-                    WriteLineInColor($"{AddBrackets(num1)} {selectedOperation} {AddBrackets(num2)} = {result}", ConsoleColor.Green);
-                }
-                catch (FormatException)
-                {
-                    WriteLineInColor("Ошибка: Неверный формат числа.", ConsoleColor.Red);
-                }
-                catch (Exception ex)
-                {
-                    WriteLineInColor($"\nПроизошла ошибка: {ex.Message}", ConsoleColor.Red);
-                }
-                finally
-                {
-                    if (!shouldExit)
-                    {
-                        Console.WriteLine("\n------------------------------------");
-                        Console.WriteLine("Нажмите любую клавишу для следующего вычисления...");
-                        Console.ReadKey();
-                    }
-                }
+                WriteInColor("\nРезультат: ", ConsoleColor.Gray);
+                WriteLineInColor($"{AddBrackets(numberOne)} {selectedOperation} {AddBrackets(numberTwo)} = {resultOfOperation}", ConsoleColor.Green);
             }
-
-        }
-
-        private string AddBrackets(double n) => n < 0 ? $"({n})" : $"{n}";
-        private double ReadNumberWithValidation(string message, out bool shouldExit)
-        {
-            shouldExit = false;
-            while (true)
+            catch (FormatException)
             {
-                string? input = ReadUserInput(message);
-
-                if (input != null && input.ToLower() == "q")
-                {
-                    shouldExit = true;
-                    return 0;
-                }
-
-                if (double.TryParse(input, out double number))
-                {
-                    return number;
-                }
-                WriteLineInColor("Ошибка: Неверный формат числа. Попробуйте еще раз.", ConsoleColor.Red);
+                WriteLineInColor("Ошибка: Неверный формат числа.", ConsoleColor.Red);
             }
-        }
-        private string? ReadUserInput(string message)
-        {
-            WriteInColor(message, ConsoleColor.Yellow);
-            return Console.ReadLine();
-        }
-
-        private string DisplayOperations()
-        {
-            Console.WriteLine();
-            WriteLineInColor("Доступные операции:", ConsoleColor.Gray);
-
-            string availableOps = string.Join("   ", _calculator.GetAvailableOperations());
-            Console.WriteLine(availableOps);
-            Console.WriteLine();
-
-            while (true)
+            catch (Exception ex)
             {
-                string? symbol = ReadUserInput("Выберите операцию: ");
-
-                if (symbol != null && _calculator.GetAvailableOperations().Contains(symbol))
-                {
-                    return symbol;
-                }
-                WriteLineInColor("Ошибка: неизвестная операция. Попробуйте еще раз.", ConsoleColor.Red);
+                WriteLineInColor($"\nПроизошла ошибка: {ex.Message}", ConsoleColor.Red);
             }
-        }
-
-        private void WriteInColor(string message, ConsoleColor color)
-        {
-            Console.ForegroundColor = color;
-            Console.Write(message);
-            Console.ResetColor();
-        }
-
-        private void WriteLineInColor(string message, ConsoleColor color)
-        {
-            Console.ForegroundColor = color;
-            Console.WriteLine(message);
-            Console.ResetColor();
+            finally
+            {
+                if (!shouldExit)
+                {
+                    Console.WriteLine("\n------------------------------------");
+                    Console.WriteLine("Нажмите любую клавишу для следующего вычисления...");
+                    Console.ReadKey();
+                }
+            }
         }
 
     }
 
+    private string AddBrackets(double n) => n < 0 ? $"({n})" : $"{n}";
+    private double ReadNumberWithValidation(string message, out bool shouldExit)
+    {
+        shouldExit = false;
+        while (true)
+        {
+            string? input = ReadUserInput(message);
+
+            if (input != null && input.ToLower() == "q")
+            {
+                shouldExit = true;
+                return 0;
+            }
+
+            if (double.TryParse(input, out double number))
+            {
+                return number;
+            }
+            WriteLineInColor("Ошибка: Неверный формат числа. Попробуйте еще раз.", ConsoleColor.Red);
+        }
+    }
+    private string? ReadUserInput(string message)
+    {
+        WriteInColor(message, ConsoleColor.Yellow);
+        return Console.ReadLine();
+    }
+
+    private string DisplayOperations()
+    {
+        Console.WriteLine();
+        WriteLineInColor("Доступные операции:", ConsoleColor.Gray);
+
+        string availableOperations = string.Join("   ", _calculator.GetAvailableOperations());
+        Console.WriteLine(availableOperations);
+        Console.WriteLine();
+
+        while (true)
+        {
+            string? operationSymbol = ReadUserInput("Выберите операцию: ");
+
+            if (operationSymbol != null && _calculator.GetAvailableOperations().Contains(operationSymbol))
+            {
+                return operationSymbol;
+            }
+            WriteLineInColor("Ошибка: неизвестная операция. Попробуйте еще раз.", ConsoleColor.Red);
+        }
+    }
+
+    private void WriteInColor(string message, ConsoleColor color)
+    {
+        Console.ForegroundColor = color;
+        Console.Write(message);
+        Console.ResetColor();
+    }
+
+    private void WriteLineInColor(string message, ConsoleColor color)
+    {
+        Console.ForegroundColor = color;
+        Console.WriteLine(message);
+        Console.ResetColor();
+    }
+
 }
+
