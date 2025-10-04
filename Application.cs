@@ -9,6 +9,7 @@ public class Application
         while (true)
         {
             bool shouldExit = false;
+
             try
             {
                 Console.Clear();
@@ -33,15 +34,16 @@ public class Application
                 double resultOfOperation = _calculator.Calculate(selectedOperation, numberOne, numberTwo);
 
                 WriteInColor("\nРезультат: ", ConsoleColor.Gray);
-                WriteLineInColor($"{AddBrackets(numberOne)} {selectedOperation} {AddBrackets(numberTwo)} = {resultOfOperation}", ConsoleColor.Green);
+                WriteInColor($"{AddBrackets(numberOne)} {selectedOperation} {AddBrackets(numberTwo)} = {resultOfOperation}", ConsoleColor.Green, true);
+
             }
             catch (FormatException)
             {
-                WriteLineInColor("Ошибка: Неверный формат числа.", ConsoleColor.Red);
+                WriteInColor("Ошибка: Неверный формат числа.", ConsoleColor.Red, true);
             }
             catch (Exception ex)
             {
-                WriteLineInColor($"\nПроизошла ошибка: {ex.Message}", ConsoleColor.Red);
+                WriteInColor($"\nПроизошла ошибка: {ex.Message}", ConsoleColor.Red, true);
             }
             finally
             {
@@ -62,7 +64,8 @@ public class Application
         shouldExit = false;
         while (true)
         {
-            string? input = ReadUserInput(message);
+            WriteInColor(message, ConsoleColor.Yellow);
+            string input = Console.ReadLine() ?? string.Empty;
 
             if (input != null && input.ToLower() == "q")
             {
@@ -74,49 +77,41 @@ public class Application
             {
                 return number;
             }
-            WriteLineInColor("Ошибка: Неверный формат числа. Попробуйте еще раз.", ConsoleColor.Red);
+            WriteInColor("Ошибка: Неверный формат числа. Попробуйте еще раз.", ConsoleColor.Red, true);
         }
-    }
-    private string? ReadUserInput(string message)
-    {
-        WriteInColor(message, ConsoleColor.Yellow);
-        return Console.ReadLine();
     }
 
     private string DisplayOperations()
     {
         Console.WriteLine();
-        WriteLineInColor("Доступные операции:", ConsoleColor.Gray);
+        WriteInColor("Доступные операции:", ConsoleColor.Gray, true);
 
-        string availableOperations = string.Join("   ", _calculator.GetAvailableOperations());
-        Console.WriteLine(availableOperations);
+        var availableOperations = _calculator.GetAvailableOperations().ToList();
+        Console.WriteLine(string.Join("   ", availableOperations));
         Console.WriteLine();
 
         while (true)
         {
-            string? operationSymbol = ReadUserInput("Выберите операцию: ");
+            WriteInColor("Выберите операцию: ", ConsoleColor.Yellow);
+            string operationSymbol = Console.ReadLine() ?? string.Empty;
 
-            if (operationSymbol != null && _calculator.GetAvailableOperations().Contains(operationSymbol))
+            if (operationSymbol != null && availableOperations.Contains(operationSymbol))
             {
                 return operationSymbol;
             }
-            WriteLineInColor("Ошибка: неизвестная операция. Попробуйте еще раз.", ConsoleColor.Red);
+            WriteInColor("Ошибка: неизвестная операция. Попробуйте еще раз.", ConsoleColor.Red, true);
         }
     }
 
-    private void WriteInColor(string message, ConsoleColor color)
+    private void WriteInColor(string message, ConsoleColor color, bool newLine = false)
     {
+        var previous = Console.ForegroundColor;
         Console.ForegroundColor = color;
-        Console.Write(message);
-        Console.ResetColor();
+        if (newLine) Console.WriteLine(message);
+        else Console.Write(message);
+        Console.ForegroundColor = previous;
     }
 
-    private void WriteLineInColor(string message, ConsoleColor color)
-    {
-        Console.ForegroundColor = color;
-        Console.WriteLine(message);
-        Console.ResetColor();
-    }
 
 }
 
